@@ -1,5 +1,8 @@
 # Editor
 .vscode/
 
+# Jupyter Notebooks
+*.ipynb
+
 # Other
 dummy_data/
