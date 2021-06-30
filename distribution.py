@@ -21,3 +21,4 @@ if __name__ == '__main__':
     trips, restrictions = convert_to_dataframes(base_zones,
                                                 base_trips,
                                                 base_restrictions)
+    affected_trips = trips.copy()
