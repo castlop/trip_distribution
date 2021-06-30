@@ -10,3 +10,7 @@ def import_json(filepath):
 
 def get_file_location():
     return pathlib.Path(input('Enter file path: '))
+
+if __name__ == '__main__':
+    filepath = get_file_location()
+    base_zones, base_trips, base_restrictions = import_json(filepath).values()
