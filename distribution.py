@@ -31,7 +31,8 @@ def prepare_export_data(trips, restrictions):
         }
     }
 
-def distribute_trips(affected_trips, restrictions):
+def distribute_trips(trips, restrictions):
+    affected_trips = trips.copy()
     pivot_origins = affected_trips.sum(axis='columns')
     origins_expansion_factors = restrictions['origins'].div(pivot_origins, axis='index')
     affected_trips = affected_trips.mul(origins_expansion_factors, axis='index')
@@ -49,8 +50,7 @@ if __name__ == '__main__':
     trips, restrictions = convert_to_dataframes(base_zones,
                                                 base_trips,
                                                 base_restrictions)
-    affected_trips = trips.copy()
-    distributed_trips = distribute_trips(affected_trips, restrictions)
+    distributed_trips = distribute_trips(trips, restrictions)
     export_data = prepare_export_data(distributed_trips, restrictions)
     export_path = export_json(filepath, export_data)
     print(f'Done! Results published in {export_path}.')
