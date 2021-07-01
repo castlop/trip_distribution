@@ -36,11 +36,11 @@ def distribute_trips(trips, restrictions):
     pivot_origins = affected_trips.sum(axis='columns')
     origins_expansion_factors = restrictions['origins'].div(pivot_origins, axis='index')
     affected_trips = affected_trips.mul(origins_expansion_factors, axis='index')
-    
+    affected_trips = affected_trips.round(0)
     pivot_destinies = affected_trips.sum(axis='index')
     destinies_expansion_factors = restrictions['destinies'].div(pivot_destinies, axis='index')
     affected_trips = affected_trips.mul(destinies_expansion_factors, axis='columns')
-    
+    affected_trips = affected_trips.round(0)
     return affected_trips
 
 
