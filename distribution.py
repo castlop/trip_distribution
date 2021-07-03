@@ -14,7 +14,7 @@ class ExternalDataManager:
                 '.json': self._import_json
             },
             'export': {
-                '.json': self._export_json
+                '.json': self.export_json
             }
         }
 
