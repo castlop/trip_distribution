@@ -20,7 +20,18 @@ class ExternalDataManager:
     
 
     def input_filepath(self, message):
-        self._filepath = pathlib.Path(input(message))
+        try:
+            user_filepath = pathlib.Path(input(message))
+            if not user_filepath.exists():
+                raise OSError('Enter a path to an existing file')
+            if not user_filepath.is_file():
+                raise OSError('Only files are allowed')
+            if user_filepath.is_reserved():
+                raise OSError('Do not use reserved files!')
+        except OSError as ose:
+            print(ose)
+            sys.exit(1)
+        self._filepath = user_filepath
         return self._filepath
 
 
