@@ -12,12 +12,14 @@ class ExternalDataManager:
             data =  json.load(read_file)
         return data
 
-
-def export_json(filepath, data):
-    export_filepath = filepath.with_name(f'results_{filepath.name}')
-    with open(export_filepath, "w") as write_file:
-        json.dump(data, write_file, indent=4)
-    return export_filepath
+    
+    @staticmethod
+    def export_json(filepath, data):
+        export_filepath = filepath.with_name(f'results_{filepath.name}')
+        with open(export_filepath, "w") as write_file:
+            json.dump(data, write_file, indent=4)
+        return export_filepath
+    
 
 def get_file_location():
     return pathlib.Path(input('Enter file path: '))
@@ -57,5 +59,5 @@ if __name__ == '__main__':
                                                 base_restrictions)
     distributed_trips = distribute_trips(trips, restrictions)
     export_data = prepare_export_data(distributed_trips, restrictions)
-    export_path = export_json(filepath, export_data)
+    export_path = ExternalDataManager.export_json(filepath, export_data)
     print(f'Done! Results published in {export_path}.')
