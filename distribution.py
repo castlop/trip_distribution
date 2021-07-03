@@ -3,10 +3,15 @@ import pathlib
 
 import pandas as pd
 
-def import_json(filepath):
-    with open(filepath, "r") as read_file:
-        data =  json.load(read_file)
-    return data
+
+class ExternalDataManager:
+    
+    @staticmethod
+    def import_json(filepath):
+        with open(filepath, "r") as read_file:
+            data =  json.load(read_file)
+        return data
+
 
 def export_json(filepath, data):
     export_filepath = filepath.with_name(f'results_{filepath.name}')
@@ -46,7 +51,7 @@ def distribute_trips(trips, restrictions):
 
 if __name__ == '__main__':
     filepath = get_file_location()
-    base_zones, base_trips, base_restrictions = import_json(filepath).values()
+    base_zones, base_trips, base_restrictions = ExternalDataManager.import_json(filepath).values()
     trips, restrictions = convert_to_dataframes(base_zones,
                                                 base_trips,
                                                 base_restrictions)
