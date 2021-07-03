@@ -19,7 +19,7 @@ class ExternalDataManager:
         }
     
 
-    def get_file_location(self):
+    def input_filepath(self):
         self._filepath = pathlib.Path(input('Enter file path: '))
         return self._filepath
 
@@ -76,7 +76,7 @@ def distribute_trips(trips, restrictions):
 
 if __name__ == '__main__':
     data_manager = ExternalDataManager()
-    filepath = data_manager.get_file_location()
+    filepath = data_manager.input_filepath()
     base_zones, base_trips, base_restrictions = data_manager.io_data('import').values()
     trips, restrictions = convert_to_dataframes(base_zones,
                                                 base_trips,
