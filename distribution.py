@@ -1,10 +1,24 @@
 import json
 import pathlib
+import sys
 
 import pandas as pd
 
 
 class ExternalDataManager:
+
+    @classmethod
+    def data_from(cls, filepath):
+        import_formats = {
+            '.json': cls.import_json
+        }
+        
+        try:
+            return import_formats[filepath.suffix](filepath)
+        except KeyError as ke:
+            print('Sorry, no file format supported ;(')
+            sys.exit(1)
+
     
     @staticmethod
     def import_json(filepath):
@@ -53,7 +67,7 @@ def distribute_trips(trips, restrictions):
 
 if __name__ == '__main__':
     filepath = get_file_location()
-    base_zones, base_trips, base_restrictions = ExternalDataManager.import_json(filepath).values()
+    base_zones, base_trips, base_restrictions = ExternalDataManager.data_from(filepath).values()
     trips, restrictions = convert_to_dataframes(base_zones,
                                                 base_trips,
                                                 base_restrictions)
