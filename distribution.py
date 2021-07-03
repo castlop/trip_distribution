@@ -7,8 +7,8 @@ import pandas as pd
 
 class ExternalDataManager:
     
-    def __init__(self, filepath):
-        self._filepath = filepath
+    def __init__(self):
+        self._filepath = pathlib.Path()
         self._supported_formats = {
             'import': {
                 '.json': self._import_json
@@ -17,6 +17,11 @@ class ExternalDataManager:
                 '.json': self._export_json
             }
         }
+    
+
+    def get_file_location(self):
+        self._filepath = pathlib.Path(input('Enter file path: '))
+        return self._filepath
 
 
     def io_data(self, action, *args, **kwargs):
@@ -40,10 +45,7 @@ class ExternalDataManager:
         with open(export_filepath, "w") as write_file:
             json.dump(data, write_file, indent=4)
         return export_filepath
-    
 
-def get_file_location():
-    return pathlib.Path(input('Enter file path: '))
 
 def convert_to_dataframes(zones, trips, restrictions):
     return [pd.DataFrame(base_trips, index=base_zones, columns=base_zones),
@@ -73,8 +75,8 @@ def distribute_trips(trips, restrictions):
 
 
 if __name__ == '__main__':
-    filepath = get_file_location()
-    data_manager = ExternalDataManager(filepath)
+    data_manager = ExternalDataManager()
+    filepath = data_manager.get_file_location()
     base_zones, base_trips, base_restrictions = data_manager.io_data('import').values()
     trips, restrictions = convert_to_dataframes(base_zones,
                                                 base_trips,
