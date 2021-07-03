@@ -32,7 +32,6 @@ class ExternalDataManager:
             print(ose)
             sys.exit(1)
         self._filepath = user_filepath
-        return self._filepath
 
 
     def io_data(self, action, *args, **kwargs):
@@ -87,7 +86,7 @@ def distribute_trips(trips, restrictions):
 
 if __name__ == '__main__':
     data_manager = ExternalDataManager()
-    filepath = data_manager.input_filepath('Enter source file path: ')
+    data_manager.input_filepath('Enter source file path: ')
     base_zones, base_trips, base_restrictions = data_manager.io_data('import').values()
     trips, restrictions = convert_to_dataframes(base_zones,
                                                 base_trips,
