@@ -19,9 +19,11 @@ class ExternalDataManager:
         }
 
 
-    def data_from(self):
+    def data_from(self, action):
+        if not action in self._supported_formats:
+            raise KeyError('Please, only pass "import" or "export"')
         try:
-            return self._supported_formats['import'][self._filepath.suffix]()
+            return self._supported_formats[action][self._filepath.suffix]()
         except KeyError as ke:
             print('Sorry, no file format supported ;(')
             sys.exit(1)
@@ -73,7 +75,7 @@ def distribute_trips(trips, restrictions):
 if __name__ == '__main__':
     filepath = get_file_location()
     data_manager = ExternalDataManager(filepath)
-    base_zones, base_trips, base_restrictions = data_manager.data_from().values()
+    base_zones, base_trips, base_restrictions = data_manager.data_from('import').values()
     trips, restrictions = convert_to_dataframes(base_zones,
                                                 base_trips,
                                                 base_restrictions)
