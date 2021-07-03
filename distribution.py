@@ -19,11 +19,11 @@ class ExternalDataManager:
         }
 
 
-    def io_data(self, action):
+    def io_data(self, action, *args, **kwargs):
         if not action in self._supported_formats:
             raise KeyError('Please, only pass "import" or "export"')
         try:
-            return self._supported_formats[action][self._filepath.suffix]()
+            return self._supported_formats[action][self._filepath.suffix](*args, **kwargs)
         except KeyError as ke:
             print('Sorry, no file format supported ;(')
             sys.exit(1)
@@ -81,5 +81,5 @@ if __name__ == '__main__':
                                                 base_restrictions)
     distributed_trips = distribute_trips(trips, restrictions)
     export_data = prepare_export_data(distributed_trips, restrictions)
-    export_path = data_manager.export_json(export_data)
+    export_path = data_manager.io_data('export', data=export_data)
     print(f'Done! Results published in {export_path}.')
