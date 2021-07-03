@@ -9,14 +9,14 @@ class ExternalDataManager:
     
     def __init__(self, filepath):
         self._filepath = filepath
-        self._import_formats = {
+        self._supported_formats = {
             '.json': self._import_json
         }
 
 
     def data_from(self):
         try:
-            return self._import_formats[self._filepath.suffix]()
+            return self._supported_formats[self._filepath.suffix]()
         except KeyError as ke:
             print('Sorry, no file format supported ;(')
             sys.exit(1)
