@@ -6,30 +6,30 @@ import pandas as pd
 
 
 class ExternalDataManager:
-
-    @classmethod
-    def data_from(cls, filepath):
-        import_formats = {
-            '.json': cls.import_json
+    
+    def __init__(self, filepath):
+        self._filepath = filepath
+        self._import_formats = {
+            '.json': self._import_json
         }
-        
+
+
+    def data_from(self):
         try:
-            return import_formats[filepath.suffix](filepath)
+            return self._import_formats[self._filepath.suffix]()
         except KeyError as ke:
             print('Sorry, no file format supported ;(')
             sys.exit(1)
 
     
-    @staticmethod
-    def import_json(filepath):
-        with open(filepath, "r") as read_file:
+    def _import_json(self):
+        with open(self._filepath, "r") as read_file:
             data =  json.load(read_file)
         return data
 
     
-    @staticmethod
-    def export_json(filepath, data):
-        export_filepath = filepath.with_name(f'results_{filepath.name}')
+    def export_json(self, data):
+        export_filepath = self._filepath.with_name(f'results_{self._filepath.name}')
         with open(export_filepath, "w") as write_file:
             json.dump(data, write_file, indent=4)
         return export_filepath
@@ -67,11 +67,12 @@ def distribute_trips(trips, restrictions):
 
 if __name__ == '__main__':
     filepath = get_file_location()
-    base_zones, base_trips, base_restrictions = ExternalDataManager.data_from(filepath).values()
+    data_manager = ExternalDataManager(filepath)
+    base_zones, base_trips, base_restrictions = data_manager.data_from().values()
     trips, restrictions = convert_to_dataframes(base_zones,
                                                 base_trips,
                                                 base_restrictions)
     distributed_trips = distribute_trips(trips, restrictions)
     export_data = prepare_export_data(distributed_trips, restrictions)
-    export_path = ExternalDataManager.export_json(filepath, export_data)
+    export_path = data_manager.export_json(export_data)
     print(f'Done! Results published in {export_path}.')
