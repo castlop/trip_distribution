@@ -9,6 +9,7 @@ class ExternalDataManager:
     
     def __init__(self):
         self._filepath = pathlib.Path()
+        self._export_filepath = pathlib.Path()
         self._supported_formats = {
             'import': {
                 '.json': self._import_json
@@ -32,13 +33,42 @@ class ExternalDataManager:
             print(ose)
             sys.exit(1)
         self._filepath = user_filepath
+    
+
+    def output_filepath(self, message_dirpath, message_filename):
+        try:
+            user_output_dirpath = ''
+            user_output_filename = ''
+
+            user_output_dirpath = input(message_dirpath)
+            user_output_dirpath = pathlib.Path(user_output_dirpath) \
+                                if user_output_dirpath \
+                                else self._filepath.parent
+            if not user_output_dirpath.is_dir():
+                raise OSError('** Enter only valid directories **')
+            if user_output_dirpath.is_reserved():
+                raise OSError('**Do not use reserved directories! **')
+            user_output_filename = input(message_filename)
+            user_output_filename = pathlib.Path(user_output_filename) \
+                                if user_output_filename \
+                                else pathlib.Path(f'results_{self._filepath.name}')
+            if not user_output_filename.suffix in self._supported_formats['export']:
+                raise OSError('** File format is not supported **')
+            self._export_filepath = user_output_dirpath / user_output_filename
+        except OSError as ose:
+            print(ose)
+            sys.exit(1)
+        return self._export_filepath
 
 
     def io_data(self, action, *args, **kwargs):
         if not action in self._supported_formats:
             raise KeyError('Please, only pass "import" or "export"')
         try:
-            return self._supported_formats[action][self._filepath.suffix](*args, **kwargs)
+            if action == 'import':
+                return self._supported_formats[action][self._filepath.suffix](*args, **kwargs)
+            elif action == 'export':
+                return self._supported_formats[action][self._export_filepath.suffix](*args, **kwargs)
         except KeyError as ke:
             print('Sorry, no file format supported ;(')
             sys.exit(1)
@@ -51,10 +81,9 @@ class ExternalDataManager:
 
     
     def _export_json(self, data):
-        export_filepath = self._filepath.with_name(f'results_{self._filepath.name}')
-        with open(export_filepath, "w") as write_file:
+        with open(self._export_filepath, "w") as write_file:
             json.dump(data, write_file, indent=4)
-        return export_filepath
+        return self._export_filepath
 
 
 def convert_to_dataframes(zones, trips, restrictions):
@@ -87,6 +116,8 @@ def distribute_trips(trips, restrictions):
 if __name__ == '__main__':
     data_manager = ExternalDataManager()
     data_manager.input_filepath('Enter source file path: ')
+    data_manager.output_filepath('Enter output directory (same as input if empty): ',
+                                'Enter output filename ("results_*<input>" if empty): ')
     base_zones, base_trips, base_restrictions = data_manager.io_data('import').values()
     trips, restrictions = convert_to_dataframes(base_zones,
                                                 base_trips,
