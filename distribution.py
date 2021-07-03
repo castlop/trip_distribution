@@ -12,6 +12,9 @@ class ExternalDataManager:
         self._supported_formats = {
             'import': {
                 '.json': self._import_json
+            },
+            'export': {
+                '.json': self._export_json
             }
         }
 
