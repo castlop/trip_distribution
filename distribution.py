@@ -14,7 +14,7 @@ class ExternalDataManager:
                 '.json': self._import_json
             },
             'export': {
-                '.json': self.export_json
+                '.json': self._export_json
             }
         }
 
@@ -35,7 +35,7 @@ class ExternalDataManager:
         return data
 
     
-    def export_json(self, data):
+    def _export_json(self, data):
         export_filepath = self._filepath.with_name(f'results_{self._filepath.name}')
         with open(export_filepath, "w") as write_file:
             json.dump(data, write_file, indent=4)
