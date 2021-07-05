@@ -21,7 +21,8 @@ class ExternalDataManager:
         self._export_filepath = pathlib.Path()
         self._supported_formats = {
             'import': {
-                '.json': self._import_json
+                '.json': self._import_json,
+                '.csv': self._import_csv
             },
             'export': {
                 '.json': self._export_json
@@ -85,6 +86,10 @@ class ExternalDataManager:
     
     def _import_json(self):
         return pd.read_json(self._filepath)
+    
+
+    def _import_csv(self):
+        return pd.read_csv(self._filepath)
 
     
     def _export_json(self, data):
