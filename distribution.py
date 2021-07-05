@@ -109,6 +109,29 @@ def prepare_export_data(trips, restrictions):
         }
     }
 
+
+def extract_data_from_import(imported_data):
+    setting_columns = SETTINGS['columns']
+    setting_index = SETTINGS['index']
+    setting_origins, setting_destinies = SETTINGS['restrictions']
+    return {
+        'trips': imported_data.loc[
+            setting_columns['start'] : setting_columns['end'],
+            setting_index['start'] : setting_index['end']
+        ],
+        'restrictions': {
+            'origins': imported_data.loc[
+                setting_columns['start'] : setting_columns['end'],
+                setting_origins
+            ],
+            'destinies': imported_data.loc[
+                setting_destinies,
+                setting_index['start'] : setting_index['end']
+            ]
+        }
+    }
+
+
 def distribute_trips(trips, restrictions):
     affected_trips = trips.copy()
     pivot_origins = affected_trips.sum(axis='columns')
