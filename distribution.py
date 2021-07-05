@@ -84,36 +84,25 @@ class ExternalDataManager:
 
     
     def _import_json(self):
-        with open(self._filepath, "r") as read_file:
-            data =  json.load(read_file)
-        return data
+        return pd.read_json(self._filepath)
 
     
     def _export_json(self, data):
-        with open(self._export_filepath, "w") as write_file:
-            json.dump(data, write_file, indent=4)
+        data.to_json(self._export_filepath, indent=4)
         return self._export_filepath
 
 
-def convert_to_dataframes(zones, trips, restrictions):
-    return [pd.DataFrame(base_trips, index=base_zones, columns=base_zones),
-            pd.DataFrame(base_restrictions, index=base_zones)]
-
-def prepare_export_data(trips, restrictions):
-    return {
-        'zones': trips.index.tolist(),
-        'trips': trips.values.tolist(),
-        'restrictions': {
-            'origins': trips.sum(axis="columns").values.tolist(),
-            'destinies': trips.sum(axis="index").values.tolist()
-        }
-    }
+def prepare_export_data(trips):
+    export_trips = trips.copy()
+    export_trips['origins'] = export_trips.sum(axis='columns')
+    export_trips.loc['destinies'] = export_trips.sum(axis='index')
+    return export_trips
 
 
 def extract_data_from_import(imported_data):
-    setting_columns = SETTINGS['columns']
-    setting_index = SETTINGS['index']
-    setting_origins, setting_destinies = SETTINGS['restrictions']
+    setting_columns = SETTINGS['extraction']['columns']
+    setting_index = SETTINGS['extraction']['index']
+    setting_origins, setting_destinies = SETTINGS['extraction']['restrictions']
     return {
         'trips': imported_data.loc[
             setting_columns['start'] : setting_columns['end'],
@@ -150,11 +139,10 @@ if __name__ == '__main__':
     data_manager.input_filepath('Enter source file path: ')
     data_manager.output_filepath('Enter output directory (same as input if empty): ',
                                 'Enter output filename ("results_*<input>" if empty): ')
-    base_zones, base_trips, base_restrictions = data_manager.io_data('import').values()
-    trips, restrictions = convert_to_dataframes(base_zones,
-                                                base_trips,
-                                                base_restrictions)
-    distributed_trips = distribute_trips(trips, restrictions)
-    export_data = prepare_export_data(distributed_trips, restrictions)
+    imported_data = data_manager.io_data('import')
+    extracted_data = extract_data_from_import(imported_data)
+    distributed_trips = distribute_trips(extracted_data['trips'],
+                                         extracted_data['restrictions'])
+    export_data = prepare_export_data(distributed_trips)
     export_path = data_manager.io_data('export', data=export_data)
     print(f'Done! Results published in {export_path}.')
