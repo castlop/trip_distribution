@@ -5,6 +5,15 @@ import sys
 import pandas as pd
 
 
+SETTINGS = {
+    'extraction': {
+        'columns': {'start': 'P01', 'end': 'P12'},
+        'index': {'start': 'P01', 'end': 'P12'},
+        'restrictions': ['origins', 'destinies']
+    }
+}
+
+
 class ExternalDataManager:
     
     def __init__(self):
