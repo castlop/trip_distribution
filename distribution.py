@@ -25,7 +25,8 @@ class ExternalDataManager:
                 '.csv': self._import_csv
             },
             'export': {
-                '.json': self._export_json
+                '.json': self._export_json,
+                '.csv': self._export_csv
             }
         }
     
@@ -94,6 +95,11 @@ class ExternalDataManager:
     
     def _export_json(self, data):
         data.to_json(self._export_filepath, indent=4)
+        return self._export_filepath
+    
+    
+    def _export_csv(self, data):
+        data.to_csv(self._export_filepath)
         return self._export_filepath
 
 
